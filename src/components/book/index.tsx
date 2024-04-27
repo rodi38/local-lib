@@ -24,7 +24,6 @@ function Book() {
 
   const handleOk = () => {
     const updatedBook = form.getFieldsValue();
-    // Aqui você pode fazer a requisição PUT para a API
     api.put(`/book/${editingBook!.id}`, updatedBook).then((response) => {
       setBooks(books.map(book => book.id === editingBook!.id ? response.data.data : book));
       setIsModalVisible(false);
@@ -89,6 +88,7 @@ function Book() {
 
 
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+
   useEffect(() => {
     api.get('/book')
       .then(response => {
