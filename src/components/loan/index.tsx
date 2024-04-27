@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import { Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
+import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 
 function Loan() {
   const [loans, setLoans] = useState([]);
@@ -45,13 +46,11 @@ function Loan() {
       title: 'Action',
       dataIndex: '',
       key: 'z',
-      render: () => <a>Update</a>,
-    },
-    {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: () => <a>Delete</a>,
+      render: () =>
+        <div>
+          <a><DeleteTwoTone /></a>
+          <a><EditTwoTone /></a>
+        </div>,
     }
   ];
 
@@ -70,8 +69,8 @@ function Loan() {
   }, []);
   return (
     <div>
-          <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
-          <Table dataSource={loans} columns={columns} />
+      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
+      <Table dataSource={loans} columns={columns} />
 
     </div>
   )

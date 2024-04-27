@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import api from "../../api";
 import { Space, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
+import { DeleteTwoTone } from "@ant-design/icons";
+
 
 
 function Student() {
@@ -26,16 +28,15 @@ function Student() {
       title: 'Action',
       dataIndex: '',
       key: 'z',
-      render: () => <a>Update</a>,
-    },
-    {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: () => <a>Delete</a>,
+      render: () => 
+      <div>
+        <a><DeleteTwoTone /></a> 
+        <a>Update</a>
+      </div>,
     }
   ];
   const { Search } = Input;
+
 
 
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
@@ -50,8 +51,8 @@ function Student() {
 
   return (
     <div>
-          <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%', padding: 15 }} />
-          <Table dataSource={students} columns={columns} />
+      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%', padding: 15 }} />
+      <Table dataSource={students} columns={columns} />
     </div>
   );
 }
