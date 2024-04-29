@@ -5,5 +5,3 @@ type Student = {
     loans: Array<Loan>;
     barrowedBooksCount: number;
 };
-
-// export default Student;

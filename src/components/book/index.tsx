@@ -3,38 +3,17 @@ import api from '../../api';
 import { useEffect, useState } from 'react';
 import Input, { SearchProps } from 'antd/es/input';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
+import HandleUtil from '../util/handle';
 
 function Book() {
-
+  const [books, setBooks] = useState<Book[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [form] = Form.useForm();
 
-  const [books, setBooks] = useState<Book[]>([]);
 
-  const handleEdit = (book: Book) => {
-    setEditingBook(book);
-    form.setFieldsValue(book);
-    setIsModalVisible(true);
-  }
+  const handleUtil: HandleUtil<Book> = new HandleUtil();
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  }
-
-  const handleOk = () => {
-    const updatedBook = form.getFieldsValue();
-    api.put(`/book/${editingBook!.id}`, updatedBook).then((response) => {
-      setBooks(books.map(book => book.id === editingBook!.id ? response.data.data : book));
-      setIsModalVisible(false);
-    }).catch(error => {
-      console.log('Erro ao fazer update do livro.', error);
-    }
-    )
-
-    console.log(form.getFieldsValue());
-    setIsModalVisible(false);
-  };
 
   const columns = [
     {
@@ -77,9 +56,9 @@ function Book() {
       dataIndex: '',
       key: 'z',
       render: (_: any, book: Book) =>
-        <div style={{ gap: '12px' }}>
-          <a><DeleteTwoTone /></a>
-          <a onClick={() => handleEdit(book)}><EditTwoTone /></a>
+        <div style={{display: 'flex', justifyContent: "space-evenly"}}>
+          <a onClick={() => handleUtil.handleDelete(book, "book", setBooks, books)}><DeleteTwoTone /></a>
+          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditTwoTone /></a>
         </div>,
     }
   ];
@@ -102,7 +81,13 @@ function Book() {
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
       <Table dataSource={books} columns={columns} />
-      <Modal title="Editar Livro" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title="Editar Livro" open={isModalVisible} onOk={() =>{
+        if(editingBook) {
+          handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible, )
+        }
+      }}
+        onCancel={() => handleUtil.handleCancel(setIsModalVisible)}
+        >
         <Form form={form} layout="vertical">
           <Form.Item label="Titulo" name="title">
             <Input />

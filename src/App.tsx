@@ -17,19 +17,19 @@ function App() {
       key: '1',
       label: 'Book',
       link: '/book',
-      newLink: '/book/new'
+      newLink: '/create-book'
     },
     {
       key: '2',
       label: 'Loan',
       link: '/loan',
-      newLink: '/loan/new'
+      newLink: '/create-loan'
     },
     {
       key: '3',
       label: 'Student',
       link: '/student',
-      newLink: '/student/new'
+      newLink: '/create-student'
     },
   ];
 
@@ -70,7 +70,7 @@ function App() {
           <Outlet />
         </div>
       </Content>
-      <Footer style={{ textAlign: 'center' }}>
+      <Footer style={{ position: 'fixed', width: '100%' ,bottom: 0, textAlign: 'center' }}>
         Rodi38 © 2024
       </Footer>
     </Layout>

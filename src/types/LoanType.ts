@@ -6,5 +6,3 @@ type Loan = {
     returnDate: Date;
     limitDate: Date;
 }
-
-// export default Loan;

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import api from "../../api";
-import { Form, Modal, Space, Table } from "antd";
+import { Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
-import { DeleteTwoTone } from "@ant-design/icons";
+import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
 
@@ -36,9 +36,9 @@ function Student() {
       dataIndex: '',
       key: 'z',
       render: (_: any, student: Student) =>
-        <div>
-          <a><DeleteTwoTone /></a>
-          <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}>Update</a>
+        <div style={{display: 'flex', justifyContent: "space-evenly"}}>
+          <a onClick={() => student.barrowedBooksCount === 0 ?handleUtil.handleDelete(student, "student" ,setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
+          <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditTwoTone /></a>
         </div>,
     }
   ];

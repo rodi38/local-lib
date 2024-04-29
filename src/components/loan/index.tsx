@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Table } from "antd";
+import { Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
+import HandleUtil from "../util/handle";
 
 function Loan() {
-  const [loans, setLoans] = useState([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
+  const [form] = Form.useForm();
+
+  const handleUtil: HandleUtil<Loan> = new HandleUtil();
+
+
   const columns = [
     {
       title: 'Livro emprestado',
@@ -46,10 +54,10 @@ function Loan() {
       title: 'Action',
       dataIndex: '',
       key: 'z',
-      render: () =>
-        <div>
-          <a><DeleteTwoTone /></a>
-          <a><EditTwoTone /></a>
+      render: (_: any, loan: Loan) =>
+        <div style={{ display: 'flex', justifyContent: "space-between" }}>
+          <a onClick={() => handleUtil.handleDelete(loan, "loan", setLoans, loans)}><DeleteTwoTone /></a>
+          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><EditTwoTone /></a>
         </div>,
     }
   ];
@@ -71,6 +79,18 @@ function Loan() {
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
       <Table dataSource={loans} columns={columns} />
+      <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
+        if (editingLoan) {
+          handleUtil.handleOk(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
+        }
+      }}
+        onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
+        <Form form={form} layout="vertical">
+          <Form.Item label="book" name="book">
+            <Input disabled/>
+          </Form.Item>
+        </Form>
+      </Modal>
 
     </div>
   )
