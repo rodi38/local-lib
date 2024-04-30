@@ -1,7 +1,7 @@
 import { Form, Button, Row, Col, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import api from '../../api';
-import { Navigate, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 
 
 function CreateLoan() {
@@ -14,6 +14,8 @@ function CreateLoan() {
         api.get('/student')
             .then(response => {
                 setStudents(response.data.data);
+                console.log('passou')
+
             }).catch(error => {
                 console.log('Ocorreu um erro!', error);
             });
@@ -30,7 +32,7 @@ function CreateLoan() {
     const onFinish = (values: any) => {
         api.post(`/loan`, values).then((response) => {
             console.log(response.data.data)
-
+            
             navigate("/student");
           }).catch(error => {
             console.log('Erro ao deletar.', error);
@@ -90,13 +92,6 @@ function CreateLoan() {
                     </Col>
 
                 </Row>
-
-
-
-
-
-
-
             </Form>
         </div>
 

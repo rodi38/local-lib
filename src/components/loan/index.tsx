@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Form, Modal, Table } from "antd";
+import { Card, Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
-import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
+import { DeleteTwoTone, EditTwoTone, ReloadOutlined } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
 function Loan() {
@@ -57,7 +57,7 @@ function Loan() {
       render: (_: any, loan: Loan) =>
         <div style={{ display: 'flex', justifyContent: "space-between" }}>
           <a onClick={() => handleUtil.handleDelete(loan, "loan", setLoans, loans)}><DeleteTwoTone /></a>
-          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><EditTwoTone /></a>
+          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><ReloadOutlined /></a>
         </div>,
     }
   ];
@@ -79,6 +79,7 @@ function Loan() {
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
       <Table dataSource={loans} columns={columns} />
+      { editingLoan && (
       <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
         if (editingLoan) {
           handleUtil.handleOk(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
@@ -86,12 +87,19 @@ function Loan() {
       }}
         onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
         <Form form={form} layout="vertical">
-          <Form.Item label="book" name="book">
-            <Input disabled/>
-          </Form.Item>
+          <Card bordered={false} style={{ width: 300 }}>
+            <p><strong>Livro:</strong> {editingLoan?.book.title}</p>
+            <p><strong>Estudante:</strong> {editingLoan?.student.fullName}</p>
+            <p><strong>Email:</strong> {editingLoan?.student.email}</p>
+            <p><strong>Data do empréstimo:</strong> {new Date(editingLoan!.loanDate).toLocaleDateString()}</p>
+            <p><strong>Data limite:</strong> {new Date(editingLoan!.limitDate).toLocaleDateString()}</p>
+            {editingLoan?.returnDate  && (
+            <p><strong>Data de retorno:</strong> {new Date(editingLoan!.returnDate).toLocaleDateString()}</p>
+            )}
+          </Card>
         </Form>
       </Modal>
-
+      )}
     </div>
   )
 }

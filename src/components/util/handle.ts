@@ -13,10 +13,6 @@ class HandleUtil<T extends IHasId> {
         setIsModalVisible(true);
     }
 
-    handleCreate  = () => {
-        
-    }
-
     handleDelete = (obj: T, context: string, setObj: React.Dispatch<React.SetStateAction<T[]>>, objArray: T[]) => {
         api.delete(`/${context}/${obj.id}`).then(() => {
             setObj(objArray.filter(item => item.id !== obj.id));

@@ -12,8 +12,9 @@ function Student() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [form] = Form.useForm();
-
+  const [searchValue, setSearchValue] = useState(''); 
   const handleUtil: HandleUtil<Student> = new HandleUtil();
+  
 
   const columns = [
     {
@@ -42,24 +43,27 @@ function Student() {
         </div>,
     }
   ];
-  const { Search } = Input;
 
-
-
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
   useEffect(() => {
     api.get('/student')
       .then(response => {
         setStudents(response.data.data)
+        console.log('passou')
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
   }, []);
+  const filteredStudents = students.filter(student =>
+    student.fullName.toLowerCase().includes(searchValue.toLowerCase())
+  );
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
 
   return (
     <div>
-      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%', padding: 15 }} />
-      <Table dataSource={students} columns={columns} />
+      <Input.Search placeholder="input search text" onChange={handleSearch} style={{ width: '100%'}} />
+      <Table dataSource={filteredStudents} columns={columns} />
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {
           handleUtil.handleOk(form, 'student', editingStudent, setStudents, students, setIsModalVisible)
