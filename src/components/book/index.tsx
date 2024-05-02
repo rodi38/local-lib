@@ -1,4 +1,4 @@
-import { Form, Modal, Table } from 'antd';
+import { Form, Modal, Pagination, Table } from 'antd';
 import api from '../../api';
 import { useEffect, useState } from 'react';
 import Input, { SearchProps } from 'antd/es/input';
@@ -10,6 +10,8 @@ function Book() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [form] = Form.useForm();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
 
   const handleUtil: HandleUtil<Book> = new HandleUtil();
@@ -69,18 +71,25 @@ function Book() {
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
   useEffect(() => {
-    api.get('/book')
+    api.get(`/book?page=${currentPage - 1}`)
       .then(response => {
-        setBooks(response.data.data)
+        setBooks(response.data.data.content);
+        setTotalPages(response.data.data.totalPages)
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
-  }, []);
+  }, [currentPage]);
 
   return (
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
-      <Table dataSource={books} columns={columns} />
+      <Table dataSource={books} columns={columns} pagination={{
+      current: currentPage,
+      total: totalPages * 10,
+      onChange: (page) => setCurrentPage(page),
+      position: ['bottomCenter']
+    }} />
+      {/* <Pagination current={currentPage} total={totalPages * 10} onChange={page => setCurrentPage(page)} /> */}
       <Modal title="Editar Livro" open={isModalVisible} onOk={() =>{
         if(editingBook) {
           handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible, )

@@ -10,7 +10,8 @@ function Loan() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [form] = Form.useForm();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const handleUtil: HandleUtil<Loan> = new HandleUtil();
 
 
@@ -68,9 +69,9 @@ function Loan() {
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
 
   useEffect(() => {
-    api.get('/loan')
+    api.get(`/loan?page=${currentPage - 1}`)
       .then(response => {
-        setLoans(response.data.data)
+        setLoans(response.data.data.content)
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
@@ -78,7 +79,12 @@ function Loan() {
   return (
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
-      <Table dataSource={loans} columns={columns} />
+      <Table dataSource={loans} columns={columns} pagination={{
+      current: currentPage,
+      total: totalPages * 10,
+      onChange: (page) => setCurrentPage(page),
+      position: ['bottomCenter']
+    }} />
       { editingLoan && (
       <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
         if (editingLoan) {

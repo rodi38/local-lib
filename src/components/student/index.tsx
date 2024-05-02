@@ -12,6 +12,8 @@ function Student() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [form] = Form.useForm();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchValue, setSearchValue] = useState(''); 
   const handleUtil: HandleUtil<Student> = new HandleUtil();
   
@@ -29,8 +31,8 @@ function Student() {
     },
     {
       title: 'Livros em Posse',
-      dataIndex: 'barrowedBooksCount',
-      key: 'barrowedBooksCount',
+      dataIndex: 'borrowedBooksCount',
+      key: 'borrowedBooksCount',
     },
     {
       title: 'Action',
@@ -38,21 +40,22 @@ function Student() {
       key: 'z',
       render: (_: any, student: Student) =>
         <div style={{display: 'flex', justifyContent: "space-evenly"}}>
-          <a onClick={() => student.barrowedBooksCount === 0 ?handleUtil.handleDelete(student, "student" ,setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
+          <a onClick={() => student.borrowedBooksCount === 0 ?handleUtil.handleDelete(student, "student" ,setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
           <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditTwoTone /></a>
         </div>,
     }
   ];
 
   useEffect(() => {
-    api.get('/student')
+    api.get(`/student?page=${currentPage - 1}`)
       .then(response => {
-        setStudents(response.data.data)
+        setStudents(response.data.data.content)
         console.log('passou')
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
   }, []);
+  
   const filteredStudents = students.filter(student =>
     student.fullName.toLowerCase().includes(searchValue.toLowerCase())
   );
@@ -63,7 +66,12 @@ function Student() {
   return (
     <div>
       <Input.Search placeholder="input search text" onChange={handleSearch} style={{ width: '100%'}} />
-      <Table dataSource={filteredStudents} columns={columns} />
+      <Table dataSource={filteredStudents} columns={columns} pagination={{
+      current: currentPage,
+      total: totalPages * 10,
+      onChange: (page) => setCurrentPage(page),
+      position: ['bottomCenter']
+    }} />
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {
           handleUtil.handleOk(form, 'student', editingStudent, setStudents, students, setIsModalVisible)

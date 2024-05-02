@@ -13,7 +13,7 @@ function CreateLoan() {
     useEffect(() => {
         api.get('/student')
             .then(response => {
-                setStudents(response.data.data);
+                setStudents(response.data.data.content);
                 console.log('passou')
 
             }).catch(error => {
@@ -23,7 +23,7 @@ function CreateLoan() {
     useEffect(() => {
         api.get('/book')
             .then(response => {
-                setBooks(response.data.data);
+                setBooks(response.data.data.content);
             }).catch(error => {
                 console.log('Ocorreu um erro!', error);
             });
@@ -31,7 +31,7 @@ function CreateLoan() {
 
     const onFinish = (values: any) => {
         api.post(`/loan`, values).then((response) => {
-            console.log(response.data.data)
+            console.log(response.data.data.content)
             
             navigate("/student");
           }).catch(error => {
