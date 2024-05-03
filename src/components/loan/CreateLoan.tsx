@@ -1,41 +1,22 @@
-import { Form, Button, Row, Col, Select } from 'antd';
+import { Form, Button, Row, Col, Select, AutoComplete } from 'antd';
 import { useEffect, useState } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
+import Student from '../student';
 
 
 function CreateLoan() {
-
-    const [students, setStudents] = useState<Student[]>([]);
-    const [books, setBooks] = useState<Book[]>([]);
+    const [searchResults, setSearchResults] = useState([]);
     const { Option } = Select;
     const navigate = useNavigate();
-    useEffect(() => {
-        api.get('/student')
-            .then(response => {
-                setStudents(response.data.data.content);
-                console.log('passou')
 
-            }).catch(error => {
-                console.log('Ocorreu um erro!', error);
-            });
-    }, []);
-    useEffect(() => {
-        api.get('/book')
-            .then(response => {
-                setBooks(response.data.data.content);
-            }).catch(error => {
-                console.log('Ocorreu um erro!', error);
-            });
-    }, []);
 
     const onFinish = (values: any) => {
         api.post(`/loan`, values).then((response) => {
             console.log(response.data.data.content)
-
-            navigate("/student");
+            navigate("/loan");
         }).catch(error => {
-            console.log('Erro ao deletar.', error);
+            console.log('Erro ao criar emprestimo.', error);
 
         });
         console.log('Success:', values);
@@ -44,6 +25,21 @@ function CreateLoan() {
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
+
+    const handleSearch = (value: string, context: string) => {
+        if (value) {
+            api.get(`/${context}?search=${value}&page=0&size=1000`)
+                .then(response => {
+                    setSearchResults(response.data.data.content);
+                    console.log(response.data.data.content)
+                }).catch(error => {
+                    console.log('Ocorreu um erro!', error);
+                });
+        } else {
+            setSearchResults([]);
+        }
+    };
+
 
     return (
         <div style={{}}>
@@ -60,13 +56,19 @@ function CreateLoan() {
                             label="Estudante"
                             name="studentId"
                             rules={[{ required: true, message: 'Por favor insira o estudante!' }]}
-                        >   
-                            
-                            <Select placeholder="Selecione um estudante">
-                                {students.map(student => (
+                        >
+
+                            <AutoComplete
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleSearch(value, "student")}
+                                placeholder="Selecione um estudante"
+                            >
+                                {searchResults.map((student: Student) => (
                                     <Option key={student.id} value={student.id}>{student.email}  | livros em posse: {student.borrowedBooksCount}</Option>
                                 ))}
-                            </Select>
+                            </AutoComplete>
+
+
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -75,11 +77,16 @@ function CreateLoan() {
                             name="bookId"
                             rules={[{ required: true, message: 'Por favor insira o livro!' }]}
                         >
-                            <Select placeholder="Selecione um estudante">
-                                {books.map(book => (
-                                    <Option key={book.id} value={book.id}>{book.title} | Quantidade em estoque: {book.stockQuantity}</Option>
+
+                            <AutoComplete
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleSearch(value, "book")}
+                                placeholder="Selecione um estudante"
+                            >
+                                {searchResults.map((book: Book) => (
+                                    <Option key={book.id} value={book.id}>{book.title}  | Quantidade em estoque: {book.stockQuantity}</Option>
                                 ))}
-                            </Select>
+                            </AutoComplete>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -87,7 +94,7 @@ function CreateLoan() {
                     <Col span={12}>
                         <Form.Item>
                             <Button type="primary" htmlType="submit">
-                                Criar Livro
+                                Enviar
                             </Button>
                         </Form.Item>
                     </Col>
