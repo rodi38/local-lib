@@ -14,9 +14,11 @@ function Student() {
   const [form] = Form.useForm();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [searchValue, setSearchValue] = useState(''); 
   const handleUtil: HandleUtil<Student> = new HandleUtil();
   
+  const [search, setSearch] = useState("");
+
+
 
   const columns = [
     {
@@ -39,39 +41,42 @@ function Student() {
       dataIndex: '',
       key: 'z',
       render: (_: any, student: Student) =>
-        <div style={{display: 'flex', justifyContent: "space-evenly"}}>
-          <a onClick={() => student.borrowedBooksCount === 0 ?handleUtil.handleDelete(student, "student" ,setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
+        <div style={{ display: 'flex', justifyContent: "space-evenly" }}>
+          <a onClick={() => student.borrowedBooksCount === 0 ? handleUtil.handleDelete(student, "student", setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
           <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditTwoTone /></a>
         </div>,
     }
   ];
 
+
+  const { Search } = Input;
+
+  const onSearch: SearchProps['onSearch'] = (value) => setSearch(value);
+
+
   useEffect(() => {
-    api.get(`/student?page=${currentPage - 1}`)
+    api.get(`/student?page=${currentPage - 1}&search=${search}`)
       .then(response => {
-        setStudents(response.data.data.content)
-        console.log('passou')
+        setStudents(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
-  }, []);
-  
-  const filteredStudents = students.filter(student =>
-    student.fullName.toLowerCase().includes(searchValue.toLowerCase())
-  );
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
-  };
+  }, [search, currentPage]);
+
+
+
 
   return (
     <div>
-      <Input.Search placeholder="input search text" onChange={handleSearch} style={{ width: '100%'}} />
-      <Table dataSource={filteredStudents} columns={columns} pagination={{
-      current: currentPage,
-      total: totalPages * 10,
-      onChange: (page) => setCurrentPage(page),
-      position: ['bottomCenter']
-    }} />
+      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
+
+      <Table dataSource={students} columns={columns} pagination={{
+        current: currentPage,
+        total: totalPages * 10,
+        onChange: (page) => setCurrentPage(page),
+        position: ['bottomCenter']
+      }} />
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {
           handleUtil.handleOk(form, 'student', editingStudent, setStudents, students, setIsModalVisible)

@@ -13,6 +13,7 @@ function Book() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
+  const [search, setSearch] = useState("");
 
   const handleUtil: HandleUtil<Book> = new HandleUtil();
 
@@ -68,17 +69,17 @@ function Book() {
   const { Search } = Input;
 
 
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps['onSearch'] = (value) => setSearch(value);
 
   useEffect(() => {
-    api.get(`/book?page=${currentPage - 1}`)
+    api.get(`/book?page=${currentPage - 1}&search=${search}`)
       .then(response => {
         setBooks(response.data.data.content);
         setTotalPages(response.data.data.totalPages)
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
-  }, [currentPage]);
+  }, [search, currentPage]);
 
   return (
     <div>

@@ -14,6 +14,9 @@ function Loan() {
   const [totalPages, setTotalPages] = useState(0);
   const handleUtil: HandleUtil<Loan> = new HandleUtil();
 
+  const [search, setSearch] = useState("");
+
+
 
   const columns = [
     {
@@ -66,45 +69,48 @@ function Loan() {
   const { Search } = Input;
 
 
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps['onSearch'] = (value) => setSearch(value);
 
   useEffect(() => {
-    api.get(`/loan?page=${currentPage - 1}`)
+    api.get(`/loan?page=${currentPage - 1}&search=${search}`)
       .then(response => {
-        setLoans(response.data.data.content)
+        setLoans(response.data.data.content);
+        setTotalPages(response.data.data.totalPages)
       }).catch(error => {
         console.log('Ocorreu um erro!', error)
       });
-  }, []);
+  }, [search, currentPage]);
+
+
   return (
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
       <Table dataSource={loans} columns={columns} pagination={{
-      current: currentPage,
-      total: totalPages * 10,
-      onChange: (page) => setCurrentPage(page),
-      position: ['bottomCenter']
-    }} />
-      { editingLoan && (
-      <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
-        if (editingLoan) {
-          handleUtil.handleOk(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
-        }
-      }}
-        onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
-        <Form form={form} layout="vertical">
-          <Card bordered={false} style={{ width: 300 }}>
-            <p><strong>Livro:</strong> {editingLoan?.book.title}</p>
-            <p><strong>Estudante:</strong> {editingLoan?.student.fullName}</p>
-            <p><strong>Email:</strong> {editingLoan?.student.email}</p>
-            <p><strong>Data do empréstimo:</strong> {new Date(editingLoan!.loanDate).toLocaleDateString()}</p>
-            <p><strong>Data limite:</strong> {new Date(editingLoan!.limitDate).toLocaleDateString()}</p>
-            {editingLoan?.returnDate  && (
-            <p><strong>Data de retorno:</strong> {new Date(editingLoan!.returnDate).toLocaleDateString()}</p>
-            )}
-          </Card>
-        </Form>
-      </Modal>
+        current: currentPage,
+        total: totalPages * 10,
+        onChange: (page) => setCurrentPage(page),
+        position: ['bottomCenter']
+      }} />
+      {editingLoan && (
+        <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
+          if (editingLoan) {
+            handleUtil.handleOk(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
+          }
+        }}
+          onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
+          <Form form={form} layout="vertical">
+            <Card bordered={false} style={{ width: 300 }}>
+              <p><strong>Livro:</strong> {editingLoan?.book.title}</p>
+              <p><strong>Estudante:</strong> {editingLoan?.student.fullName}</p>
+              <p><strong>Email:</strong> {editingLoan?.student.email}</p>
+              <p><strong>Data do empréstimo:</strong> {new Date(editingLoan!.loanDate).toLocaleDateString()}</p>
+              <p><strong>Data limite:</strong> {new Date(editingLoan!.limitDate).toLocaleDateString()}</p>
+              {editingLoan?.returnDate && (
+                <p><strong>Data de retorno:</strong> {new Date(editingLoan!.returnDate).toLocaleDateString()}</p>
+              )}
+            </Card>
+          </Form>
+        </Modal>
       )}
     </div>
   )
