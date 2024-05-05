@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import { Card, Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
-import { DeleteTwoTone, EditTwoTone, ReloadOutlined } from "@ant-design/icons";
+import { DeleteFilled, DeleteOutlined, DeleteTwoTone, EditTwoTone, ReloadOutlined, UndoOutlined } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
 function Loan() {
@@ -57,11 +57,12 @@ function Loan() {
     {
       title: 'Action',
       dataIndex: '',
+      width: 100,
       key: 'z',
       render: (_: any, loan: Loan) =>
-        <div style={{ display: 'flex', justifyContent: "space-between" }}>
-          <a onClick={() => handleUtil.handleDelete(loan, "loan", setLoans, loans)}><DeleteTwoTone /></a>
-          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><ReloadOutlined /></a>
+        <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => handleUtil.handleDelete(loan, "loan", setLoans, loans)}><DeleteFilled style={{color: '#e30202', fontSize: '18px'}}/></a>
+          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><UndoOutlined style={{color: '#0251e3', fontSize: '18px'}} /></a>
         </div>,
     }
   ];

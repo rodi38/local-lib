@@ -93,7 +93,7 @@ function CreateLoan() {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" style={{boxShadow: 'none'}} htmlType="submit">
                                 Enviar
                             </Button>
                         </Form.Item>

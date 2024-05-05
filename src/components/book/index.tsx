@@ -2,7 +2,7 @@ import { Form, Modal, Pagination, Table } from 'antd';
 import api from '../../api';
 import { useEffect, useState } from 'react';
 import Input, { SearchProps } from 'antd/es/input';
-import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
+import { DeleteFilled, DeleteOutlined, DeleteTwoTone, EditFilled, EditOutlined, EditTwoTone } from '@ant-design/icons';
 import HandleUtil from '../util/handle';
 
 function Book() {
@@ -57,11 +57,12 @@ function Book() {
     {
       title: 'Action',
       dataIndex: '',
+      width: 100,
       key: 'z',
       render: (_: any, book: Book) =>
-        <div style={{display: 'flex', justifyContent: "space-evenly"}}>
-          <a onClick={() => handleUtil.handleDelete(book, "book", setBooks, books)}><DeleteTwoTone /></a>
-          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditTwoTone /></a>
+        <div style={{display: 'flex', justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => handleUtil.handleDelete(book, "book", setBooks, books)}><DeleteFilled style={{color: '#e30202', fontSize: '18px'}}/></a>
+          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditFilled style={{color: '#ff8903', fontSize: '18px'}} /></a>
         </div>,
     }
   ];

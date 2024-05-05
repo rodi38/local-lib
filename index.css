@@ -1,0 +1,34 @@
+body,
+form,
+fieldset,
+ol,
+ul,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    border: 0;
+    vertical-align: bottom;
+}
+
+html {
+    height: 100%;
+    overflow: auto;
+    overflow-y: hidden;
+}
+
+body {
+    height: 100%;
+    font: 100%/1.5 Arial, Helvetica, sans-serif;
+    background: #FDFDFD;
+    color: #333;
+}

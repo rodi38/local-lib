@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import api from "../../api";
 import { Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
-import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
 
@@ -39,11 +39,12 @@ function Student() {
     {
       title: 'Action',
       dataIndex: '',
+      width: 100,
       key: 'z',
       render: (_: any, student: Student) =>
-        <div style={{ display: 'flex', justifyContent: "space-evenly" }}>
-          <a onClick={() => student.borrowedBooksCount === 0 ? handleUtil.handleDelete(student, "student", setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteTwoTone /></a>
-          <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditTwoTone /></a>
+        <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => student.borrowedBooksCount === 0 ? handleUtil.handleDelete(student, "student", setStudents, students) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteFilled style={{color: '#e30202', fontSize: '18px'}}/></a>
+          <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditFilled style={{color: '#ff8903', fontSize: '18px'}}/></a>
         </div>,
     }
   ];
@@ -71,11 +72,11 @@ function Student() {
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
 
-      <Table dataSource={students} columns={columns} pagination={{
+      <Table dataSource={students} virtual columns={columns} pagination={{
         current: currentPage,
         total: totalPages * 10,
         onChange: (page) => setCurrentPage(page),
-        position: ['bottomCenter']
+        position: ['bottomCenter'],
       }} />
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {

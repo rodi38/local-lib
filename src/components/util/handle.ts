@@ -14,8 +14,9 @@ class HandleUtil<T extends IHasId> {
     }
 
     handleDelete = (obj: T, context: string, setObj: React.Dispatch<React.SetStateAction<T[]>>, objArray: T[]) => {
-        api.delete(`/${context}/${obj.id}`).then(() => {
+        api.delete(`/${context}/${obj.id}`).then((response) => {
             setObj(objArray.filter(item => item.id !== obj.id));
+            console.log(response)
           }).catch(error => {
             console.log('Erro ao deletar.', error);
           });
