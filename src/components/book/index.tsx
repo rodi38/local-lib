@@ -89,9 +89,8 @@ function Book() {
       current: currentPage,
       total: totalPages * 10,
       onChange: (page) => setCurrentPage(page),
-      position: ['bottomCenter']
+      position: ['topCenter']
     }} />
-      {/* <Pagination current={currentPage} total={totalPages * 10} onChange={page => setCurrentPage(page)} /> */}
       <Modal title="Editar Livro" open={isModalVisible} onOk={() =>{
         if(editingBook) {
           handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible, )

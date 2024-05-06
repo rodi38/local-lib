@@ -7,6 +7,7 @@ import HandleUtil from "../util/handle";
 
 
 
+
 function Student() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -76,7 +77,7 @@ function Student() {
         current: currentPage,
         total: totalPages * 10,
         onChange: (page) => setCurrentPage(page),
-        position: ['bottomCenter'],
+        position: ['topCenter'],
       }} />
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {

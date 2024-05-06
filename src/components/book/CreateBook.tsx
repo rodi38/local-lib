@@ -1,6 +1,8 @@
 import { Form, Input, InputNumber, Button, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 
 function CreateBook() {
@@ -8,15 +10,23 @@ function CreateBook() {
     const navigate = useNavigate();
     
 
-    const onFinish = (values: any) => {
-        api.post(`/book`, values).then((response) => {
-            console.log(response.data.data)
-            navigate("/book");
-          }).catch(error => {
-            console.log('Erro ao deletar.', error);
-
-          });
-        console.log('Success:', values);
+    const onFinish = async (values: any) => {
+        try {
+            await api.post(`/book`, values);
+            await toast.promise(
+                new Promise(resolve => setTimeout(resolve, 1000)),
+                {
+                  pending: 'Enviando ...',
+                  success: 'Livro cadastrado com sucesso!',
+                },
+                {
+                    theme: 'colored'
+                }
+            );
+            navigate("/book"); 
+        } catch (error) {
+            error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+        }
 
     };
 
@@ -118,6 +128,9 @@ function CreateBook() {
                         <Form.Item>
                             <Button type="primary" style={{boxShadow: 'none'}} htmlType="submit">
                                 Enviar
+                            </Button>
+                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/student")}>
+                                Cancelar
                             </Button>
                         </Form.Item>
                     </Col>

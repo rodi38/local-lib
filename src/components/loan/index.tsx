@@ -90,7 +90,7 @@ function Loan() {
         current: currentPage,
         total: totalPages * 10,
         onChange: (page) => setCurrentPage(page),
-        position: ['bottomCenter']
+        position: ['topCenter']
       }} />
       {editingLoan && (
         <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {

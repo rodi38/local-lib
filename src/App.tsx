@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import { Layout, Menu, theme, Input, Space, Card, Table, MenuProps, ConfigProvider, Radio, Switch } from 'antd';
+import { Layout, Menu, ConfigProvider, Switch } from 'antd';
 import SubMenu from 'antd/es/menu/SubMenu';
-import { MoonFilled, SunFilled, SunOutlined } from '@ant-design/icons';
+import { MoonFilled, SunFilled } from '@ant-design/icons';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+
+
 
 
 
@@ -79,7 +83,8 @@ function App() {
           },
       }
 
-    }}>
+    }}> 
+    <ToastContainer />
       <Layout style={{ height: '100vh', width: "100%" }}>
         <header style={{ display: 'flex', alignItems: 'center' }}>
           <Menu

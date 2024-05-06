@@ -2,7 +2,8 @@ import { Form, Button, Row, Col, Select, AutoComplete } from 'antd';
 import { useEffect, useState } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
-import Student from '../student';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 
 function CreateLoan() {
@@ -11,33 +12,42 @@ function CreateLoan() {
     const navigate = useNavigate();
 
 
-    const onFinish = (values: any) => {
-        api.post(`/loan`, values).then((response) => {
-            console.log(response.data.data.content)
-            navigate("/loan");
-        }).catch(error => {
-            console.log('Erro ao criar emprestimo.', error);
+    const onFinish = async (values: any) => {
 
-        });
-        console.log('Success:', values);
+        try {
+            await api.post(`/loan`, values);
+
+            await toast.promise(
+                new Promise(resolve => setTimeout(resolve, 1000)),
+                {
+                  pending: 'Enviando ...',
+                  success: 'Emprestimo efetuado com sucesso!',
+                }
+            ,{
+                theme: 'colored'
+            });
+
+            navigate("/loan");
+        } catch (error) {
+            toast.error(error.response.data.message, {theme: "colored", autoClose: 3000,});
+            error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+        }
+
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
 
-    const handleSearch = (value: string, context: string) => {
-        if (value) {
-            api.get(`/${context}?search=${value}&page=0&size=1000`)
-                .then(response => {
-                    setSearchResults(response.data.data.content);
-                    console.log(response.data.data.content)
-                }).catch(error => {
-                    console.log('Ocorreu um erro!', error);
-                });
-        } else {
-            setSearchResults([]);
+    const handleSearch = async (value: string, context: string) => {
+        try {
+            const response = await api.get(`/${context}?search=${value}&page=0&size=1000`);
+            setSearchResults(response.data.data.content);
+            console.log(response.data.data.content)
+        } catch (error) {
+            console.log('Ocorreu um erro ao pesquisar!', error);
         }
+
     };
 
 
@@ -93,8 +103,11 @@ function CreateLoan() {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item>
-                            <Button type="primary" style={{boxShadow: 'none'}} htmlType="submit">
+                            <Button type="primary" style={{ boxShadow: 'none' }} htmlType="submit">
                                 Enviar
+                            </Button>
+                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/student")}>
+                                Cancelar
                             </Button>
                         </Form.Item>
                     </Col>

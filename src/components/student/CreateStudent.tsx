@@ -1,25 +1,36 @@
-import { Form, Input, InputNumber, Button, Row, Col } from 'antd';
-import { Button as AntdButton } from 'antd';
- 
+import { Form, Input, Button, Row, Col } from 'antd';
+
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 
 function CreateStudent() {
-
     const navigate = useNavigate();
 
-
-    const onFinish = (values: any) => {
-        api.post(`/student`, values).then((response) => {
-            console.log(response.data.data)
+    const onFinish = async (values: any) => {
+        try {
+            await api.post(`/student`, values);
+            await toast.promise(
+                new Promise(resolve => setTimeout(resolve, 1000)),
+                {
+                  pending: 'Enviando ...',
+                  success: 'Estudante cadastrado com sucesso!',
+                }
+            ,{
+                theme: 'colored'
+            });
             navigate("/student");
 
-        }).catch(error => {
-            console.log('Erro ao deletar.', error);
+        } catch (error) {
+            if(error.response.data.errors) {
+                error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+            }
+            toast.error( error.response.data.message, {theme: "colored", autoClose: 3000,});
+            console.log(error)
 
-        });
-        console.log('Success:', values);
+        }
 
     };
 
@@ -63,8 +74,12 @@ function CreateStudent() {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item>
-                            <Button type="primary" style={{boxShadow: 'none'}} htmlType="submit">
+                            <Button type="primary" style={{ boxShadow: 'none' }} htmlType="submit">
                                 Enviar
+                            </Button>
+
+                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/student")}>
+                                Cancelar
                             </Button>
                         </Form.Item>
                     </Col>
