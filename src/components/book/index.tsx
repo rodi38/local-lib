@@ -1,8 +1,8 @@
-import { Form, Modal, Pagination, Table } from 'antd';
+import { Button, Form, Modal, Table } from 'antd';
 import api from '../../api';
 import { useEffect, useState } from 'react';
 import Input, { SearchProps } from 'antd/es/input';
-import { DeleteFilled, DeleteOutlined, DeleteTwoTone, EditFilled, EditOutlined, EditTwoTone } from '@ant-design/icons';
+import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import HandleUtil from '../util/handle';
 
 function Book() {
@@ -16,6 +16,26 @@ function Book() {
   const [search, setSearch] = useState("");
 
   const handleUtil: HandleUtil<Book> = new HandleUtil();
+
+
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [bookToDelete, setbookToDelete] = useState<Book | null>(null);
+
+  const showDeleteConfirmModal = (book: Book) => {
+    setbookToDelete(book);
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (bookToDelete) {
+      handleUtil.handleDelete(bookToDelete, "book", setBooks, books);
+    }
+    setIsDeleteModalVisible(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalVisible(false);
+  };
 
 
   const columns = [
@@ -60,9 +80,9 @@ function Book() {
       width: 100,
       key: 'z',
       render: (_: any, book: Book) =>
-        <div style={{display: 'flex', justifyContent: "flex-start", gap: 20 }}>
-          <a onClick={() => handleUtil.handleDelete(book, "book", setBooks, books)}><DeleteFilled style={{color: '#e30202', fontSize: '18px'}}/></a>
-          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditFilled style={{color: '#ff8903', fontSize: '18px'}} /></a>
+        <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => showDeleteConfirmModal(book)}><DeleteFilled style={{ color: '#e30202', fontSize: '18px' }} /></a>
+          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditFilled style={{ color: '#ff8903', fontSize: '18px' }} /></a>
         </div>,
     }
   ];
@@ -86,18 +106,37 @@ function Book() {
     <div>
       <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
       <Table dataSource={books} columns={columns} pagination={{
-      current: currentPage,
-      total: totalPages * 10,
-      onChange: (page) => setCurrentPage(page),
-      position: ['topCenter']
-    }} />
-      <Modal title="Editar Livro" open={isModalVisible} onOk={() =>{
-        if(editingBook) {
-          handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible, )
+        current: currentPage,
+        total: totalPages * 10,
+        onChange: (page) => setCurrentPage(page),
+        position: ['topCenter']
+      }} />
+
+      {isDeleteModalVisible && (
+        <Modal
+          title="Confirmação de Deleção"
+          open={isDeleteModalVisible}
+          onOk={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          footer={[
+            <Button key="back" onClick={handleDeleteCancel}>
+              Cancelar
+            </Button>,
+            <Button key="submit" type="primary" onClick={handleDeleteConfirm}>
+              Deletar
+            </Button>,
+          ]}
+        >
+          <p>Tem certeza que deseja deletar este item?</p>
+        </Modal>
+      )}
+      <Modal title="Editar Livro" open={isModalVisible} onOk={() => {
+        if (editingBook) {
+          handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible,)
         }
       }}
         onCancel={() => handleUtil.handleCancel(setIsModalVisible)}
-        >
+      >
         <Form form={form} layout="vertical">
           <Form.Item label="Titulo" name="title">
             <Input />

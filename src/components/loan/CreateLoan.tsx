@@ -1,8 +1,8 @@
 import { Form, Button, Row, Col, Select, AutoComplete } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 
@@ -20,17 +20,17 @@ function CreateLoan() {
             await toast.promise(
                 new Promise(resolve => setTimeout(resolve, 1000)),
                 {
-                  pending: 'Enviando ...',
-                  success: 'Emprestimo efetuado com sucesso!',
+                    pending: 'Enviando ...',
+                    success: 'Emprestimo efetuado com sucesso!',
                 }
-            ,{
-                theme: 'colored'
-            });
+                , {
+                    theme: 'colored'
+                });
 
             navigate("/loan");
         } catch (error) {
-            toast.error(error.response.data.message, {theme: "colored", autoClose: 3000,});
-            error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+            toast.error(error.response.data.message, { theme: "colored", autoClose: 3000, });
+            error.response.data.errors.forEach((e: string) => toast.error(e, { theme: "colored", autoClose: 3000, }));
         }
 
     };

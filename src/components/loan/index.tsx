@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { Card, Form, Modal, Table } from "antd";
+import { Button, Card, Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
-import { DeleteFilled, DeleteOutlined, DeleteTwoTone, EditTwoTone, ReloadOutlined, UndoOutlined } from "@ant-design/icons";
+import { DeleteFilled, UndoOutlined } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
 function Loan() {
@@ -16,6 +16,25 @@ function Loan() {
 
   const [search, setSearch] = useState("");
 
+
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [loanToDelete, setLoanToDelete] = useState<Loan | null>(null);
+
+  const showDeleteConfirmModal = (loan: Loan) => {
+    setLoanToDelete(loan);
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (loanToDelete) {
+      handleUtil.handleDelete(loanToDelete, "loan", setLoans, loans);
+    }
+    setIsDeleteModalVisible(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalVisible(false);
+  };
 
 
   const columns = [
@@ -61,8 +80,8 @@ function Loan() {
       key: 'z',
       render: (_: any, loan: Loan) =>
         <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
-          <a onClick={() => handleUtil.handleDelete(loan, "loan", setLoans, loans)}><DeleteFilled style={{color: '#e30202', fontSize: '18px'}}/></a>
-          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><UndoOutlined style={{color: '#0251e3', fontSize: '18px'}} /></a>
+          <a onClick={() => showDeleteConfirmModal(loan)}><DeleteFilled style={{ color: '#e30202', fontSize: '18px' }} /></a>
+          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><UndoOutlined style={{ color: '#0251e3', fontSize: '18px' }} /></a>
         </div>,
     }
   ];
@@ -92,6 +111,24 @@ function Loan() {
         onChange: (page) => setCurrentPage(page),
         position: ['topCenter']
       }} />
+      {isDeleteModalVisible && (
+        <Modal
+          title="Confirmação de Deleção"
+          open={isDeleteModalVisible}
+          onOk={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          footer={[
+            <Button key="back" onClick={handleDeleteCancel}>
+              Cancelar
+            </Button>,
+            <Button key="submit" type="primary" onClick={handleDeleteConfirm}>
+              Deletar
+            </Button>,
+          ]}
+        >
+          <p>Tem certeza que deseja deletar este item?</p>
+        </Modal>
+      )}
       {editingLoan && (
         <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
           if (editingLoan) {
