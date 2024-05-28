@@ -5,6 +5,10 @@ import Input, { SearchProps } from "antd/es/input";
 import { DeleteFilled, UndoOutlined } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
 
+// const formatDateString = (date: Date): string => {
+//   return isNaN(date.getDate()) ? "Invalid Date" : date.toLocaleDateString();
+// }
+
 function Loan() {
   const [loans, setLoans] = useState<Loan[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -81,7 +85,11 @@ function Loan() {
       render: (_: any, loan: Loan) =>
         <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
           <a onClick={() => showDeleteConfirmModal(loan)}><DeleteFilled style={{ color: '#e30202', fontSize: '18px' }} /></a>
-          <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><UndoOutlined style={{ color: '#0251e3', fontSize: '18px' }} /></a>
+          {loan.returnDate ? (
+            <a onClick={() => alert('Este livro já foi retornado')}><UndoOutlined style={{ color: '#e30202', fontSize: '18px' }} /></a>
+          ) : (
+            <a onClick={() => handleUtil.handleEdit(loan, setEditingLoan, form, setIsModalVisible)}><UndoOutlined style={{ color: '#0251e3', fontSize: '18px' }} /></a>
+          )}
         </div>,
     }
   ];
@@ -126,7 +134,7 @@ function Loan() {
             </Button>,
           ]}
         >
-          <p>Tem certeza que deseja deletar este item?</p>
+          <p>Tem certeza que deseja deletar este empréstimo?</p>
         </Modal>
       )}
       {editingLoan && (
@@ -137,14 +145,14 @@ function Loan() {
         }}
           onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
           <Form form={form} layout="vertical">
-            <Card bordered={false} style={{ width: 300 }}>
+            <Card bordered={false} style={{ width: "100%" }}>
               <p><strong>Livro:</strong> {editingLoan?.book.title}</p>
               <p><strong>Estudante:</strong> {editingLoan?.student.fullName}</p>
               <p><strong>Email:</strong> {editingLoan?.student.email}</p>
-              <p><strong>Data do empréstimo:</strong> {new Date(editingLoan!.loanDate).toLocaleDateString()}</p>
-              <p><strong>Data limite:</strong> {new Date(editingLoan!.limitDate).toLocaleDateString()}</p>
+              <p><strong>Data do empréstimo:</strong> {editingLoan!.loanDate.toString()}</p>
+              <p><strong>Data limite:</strong> {editingLoan!.limitDate.toString()}</p>
               {editingLoan?.returnDate && (
-                <p><strong>Data de retorno:</strong> {new Date(editingLoan!.returnDate).toLocaleDateString()}</p>
+                <p><strong>Data de retorno:</strong> {editingLoan!.returnDate.toString()}</p>
               )}
             </Card>
           </Form>

@@ -24,7 +24,7 @@ function CreateBook() {
                 }
             );
             navigate("/book"); 
-        } catch (error) {
+        } catch (error: any) {
             error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
         }
 

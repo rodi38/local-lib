@@ -11,11 +11,12 @@ function CreateLoan() {
     const { Option } = Select;
     const navigate = useNavigate();
 
-
     const onFinish = async (values: any) => {
-
         try {
-            await api.post(`/loan`, values);
+            const { studentId, bookId } = values;
+            console.log(values);
+
+            await api.post(`/loan`, { bookId, studentId });
 
             await toast.promise(
                 new Promise(resolve => setTimeout(resolve, 1000)),
@@ -28,7 +29,7 @@ function CreateLoan() {
                 });
 
             navigate("/loan");
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error.response.data.message, { theme: "colored", autoClose: 3000, });
             error.response.data.errors.forEach((e: string) => toast.error(e, { theme: "colored", autoClose: 3000, }));
         }
@@ -62,6 +63,7 @@ function CreateLoan() {
             >
                 <Row gutter={16}>
                     <Col span={12}>
+                
                         <Form.Item
                             label="Estudante"
                             name="studentId"
@@ -75,7 +77,10 @@ function CreateLoan() {
                             >
                                 {searchResults.map((student: Student) => (
                                     <Option key={student.id} value={student.id}>{student.email}  | livros em posse: {student.borrowedBooksCount}</Option>
+
                                 ))}
+
+
                             </AutoComplete>
 
 

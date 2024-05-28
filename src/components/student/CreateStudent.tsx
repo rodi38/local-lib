@@ -23,7 +23,7 @@ function CreateStudent() {
             });
             navigate("/student");
 
-        } catch (error) {
+        } catch (error: any) {
             if(error.response.data.errors) {
                 error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
             }
