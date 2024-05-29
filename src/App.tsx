@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Layout, Menu, ConfigProvider, Switch } from 'antd';
 import SubMenu from 'antd/es/menu/SubMenu';
@@ -16,7 +16,9 @@ function App() {
   const { Content, Footer } = Layout;
 
 
-  const [currentTheme, setCurrentTheme] = useState('light');
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
 
   const ligthTheme = {
 
@@ -71,6 +73,15 @@ function App() {
     },
   ];
 
+  const handleThemeChange = (checked: Boolean | undefined) => {
+    setCurrentTheme(checked ? 'dark' : 'light');
+  };
+
+  useEffect(() => {
+    localStorage.setItem('theme', currentTheme);
+  }, [currentTheme]);
+
+
   return (
     <ConfigProvider theme={{
       token: currentTheme === 'light' ? ligthTheme : darkTheme,
@@ -104,7 +115,7 @@ function App() {
 
           <Switch
             checked={currentTheme === 'dark'}
-            onChange={(checked) => setCurrentTheme(checked ? 'dark' : 'light')}
+            onChange={handleThemeChange}
             checkedChildren={<MoonFilled />} 
             unCheckedChildren={<SunFilled />}>
           </Switch>

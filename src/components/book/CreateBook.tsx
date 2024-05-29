@@ -137,13 +137,6 @@ function CreateBook() {
     
                 </Row>
 
-
-
-
-
-
-
-
             </Form>
         </div>
 

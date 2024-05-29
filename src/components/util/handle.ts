@@ -34,7 +34,7 @@ class HandleUtil<T extends IHasId> {
             setObj(obj.map(item => item.id === editingObj.id ? response.data.data : item));
             setIsModalVisible(false);
         }).catch(error => {
-            console.log('Erro ao fazer update do livro.', error);
+            console.log('Erro ao fazer update', error);
         }
         )
         console.log(form.getFieldsValue());
