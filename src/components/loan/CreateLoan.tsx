@@ -8,8 +8,6 @@ import _, { debounce } from 'lodash';
 
 
 function CreateLoan() {
-    // const [searchResults, setSearchResults] = useState([]);
-
     const [bookSearchResults, setBookSearchResults] = useState<Book[]>([]);
     const [studentSearchResults, setStudentSearchResults] = useState<Student[]>([]);
 
@@ -28,7 +26,7 @@ function CreateLoan() {
                 new Promise(resolve => setTimeout(resolve, 1000)),
                 {
                     pending: 'Enviando ...',
-                    success: 'Emprestimo efetuado com sucesso!',
+                    success: 'Empréstimo efetuado com sucesso!',
                 }
                 , {
                     theme: 'colored'
@@ -121,7 +119,7 @@ function CreateLoan() {
                             <Button type="primary" style={{ boxShadow: 'none' }} htmlType="submit">
                                 Enviar
                             </Button>
-                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/student")}>
+                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/loan")}>
                                 Cancelar
                             </Button>
                         </Form.Item>

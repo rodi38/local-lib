@@ -13,20 +13,22 @@ class HandleUtil<T extends IHasId> {
         setIsModalVisible(true);
     }
 
-    handleDelete = (obj: T, context: string, setObj: React.Dispatch<React.SetStateAction<T[]>>, objArray: T[]) => {
-        api.delete(`/${context}/${obj.id}`).then((response) => {
-            setObj(objArray.filter(item => item.id !== obj.id));
-            console.log(response)
-          }).catch(error => {
-            console.log('Erro ao deletar.', error);
-          });
+    handleDelete = async (obj: T, context: string, setObj: React.Dispatch<React.SetStateAction<T[]>>, objArray: T[]) => {
+       try{
+            await api.delete(`/${context}/${obj.id}`);
+            const updatedObjArray = objArray.filter(item => item.id !== obj.id);
+            setObj(updatedObjArray);
+       } catch(error) {
+        console.log('Erro ao deletar.', error);
+       }
+        
     }
 
     handleCancel = (setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
         setIsModalVisible(false);
     }
 
-    handleOk = (form: FormInstance, context: string, editingObj: T, setObj: React.Dispatch<React.SetStateAction<T[]>>, obj: T[],  setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>, sendBody: boolean = true) => {
+    handlePut = (form: FormInstance, context: string, editingObj: T, setObj: React.Dispatch<React.SetStateAction<T[]>>, obj: T[],  setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>, sendBody: boolean = true) => {
         const updatedObject = form.getFieldsValue();
         const request = sendBody ? api.put(`/${context}/${editingObj!.id}`, updatedObject) : api.put(`/${context}/${editingObj!.id}`)
 

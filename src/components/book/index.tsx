@@ -25,11 +25,16 @@ function Book() {
   const showDeleteConfirmModal = (book: Book) => {
     setbookToDelete(book);
     setIsDeleteModalVisible(true);
+
+    
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (bookToDelete) {
-      handleUtil.handleDelete(bookToDelete, "book", setBooks, books);
+      await handleUtil.handleDelete(bookToDelete, "book", setBooks, books);
+      const pageAfterDeletion = (books.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+      setCurrentPage(pageAfterDeletion);
+      fetchBooks(search, pageAfterDeletion);
     }
     setIsDeleteModalVisible(false);
   };
@@ -107,7 +112,7 @@ function Book() {
     return () => {
       debouncedFetchBooks.cancel();
     };
-  }, [search]);
+  }, [search, currentPage]);
 
   return (
     <div>
@@ -143,7 +148,7 @@ function Book() {
       )}
       <Modal title="Editar Livro" open={isModalVisible} onOk={() => {
         if (editingBook) {
-          handleUtil.handleOk(form, "book", editingBook, setBooks, books, setIsModalVisible,)
+          handleUtil.handlePut(form, "book", editingBook, setBooks, books, setIsModalVisible,)
         }
       }}
         onCancel={() => handleUtil.handleCancel(setIsModalVisible)}

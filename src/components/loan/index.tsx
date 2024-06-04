@@ -30,9 +30,13 @@ function Loan() {
     setIsDeleteModalVisible(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (loanToDelete) {
-      handleUtil.handleDelete(loanToDelete, "loan", setLoans, loans);
+      await handleUtil.handleDelete(loanToDelete, "loan", setLoans, loans);
+      // Recarregar dados após exclusão
+      const pageAfterDeletion = (loans.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+      setCurrentPage(pageAfterDeletion);
+      fetchLoans(search, pageAfterDeletion);
     }
     setIsDeleteModalVisible(false);
   };
@@ -112,7 +116,7 @@ function Loan() {
     return () => {
       debouncedFetchBooks.cancel();
     };
-  }, [search]);
+  }, [search, currentPage]);
 
 
 
@@ -150,7 +154,7 @@ function Loan() {
       {editingLoan && (
         <Modal title="Deseja retornar o livro emprestado?" open={isModalVisible} onOk={() => {
           if (editingLoan) {
-            handleUtil.handleOk(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
+            handleUtil.handlePut(form, 'loan', editingLoan, setLoans, loans, setIsModalVisible, false)
           }
         }}
           onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>

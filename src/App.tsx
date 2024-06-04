@@ -61,7 +61,7 @@ function App() {
     },
     {
       key: '2',
-      label: 'Emprestimo',
+      label: 'Empréstimo',
       link: '/loan',
       newLink: '/create-loan'
     },
@@ -72,6 +72,14 @@ function App() {
       newLink: '/create-student'
     },
   ];
+
+  const linkStyle = {
+    display: 'block',
+    width: '100%',
+    height: '100%',
+    textDecoration: 'none'
+  };
+
 
   const handleThemeChange = (checked: Boolean | undefined) => {
     setCurrentTheme(checked ? 'dark' : 'light');
@@ -105,8 +113,8 @@ function App() {
             style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent', }}
           >
             {items.map(item => (
-              <SubMenu key={item.key} title={<Link to={item.link}>{item.label}</Link>}>
-                <Menu.Item key={`${item.key}2`}><Link to={item.newLink}>Cadastro</Link></Menu.Item>
+              <SubMenu key={item.key} title={<Link style={linkStyle} to={item.link}>{item.label}</Link>}>
+                <Menu.Item key={`${item.key}2`}><Link style={linkStyle} to={item.newLink}>Cadastro</Link></Menu.Item>
               </SubMenu>
             ))}
 

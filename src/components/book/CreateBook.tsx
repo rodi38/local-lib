@@ -137,7 +137,7 @@ function CreateBook() {
                             <Button type="primary" style={{boxShadow: 'none'}} htmlType="submit">
                                 Enviar
                             </Button>
-                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/student")}>
+                            <Button type="default" style={{ marginLeft: '10px' }} onClick={() => navigate("/book")}>
                                 Cancelar
                             </Button>
                         </Form.Item>

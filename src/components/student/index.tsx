@@ -27,16 +27,21 @@ function Student() {
     setIsDeleteModalVisible(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (studentToDelete) {
-      handleUtil.handleDelete(studentToDelete, "student", setStudents, students);
+      await handleUtil.handleDelete(studentToDelete, "student", setStudents, students);
+      const pageAfterDeletion = (students.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+      setCurrentPage(pageAfterDeletion);
+      fetchStudents(search, pageAfterDeletion);
     }
     setIsDeleteModalVisible(false);
   };
 
+  
   const handleDeleteCancel = () => {
     setIsDeleteModalVisible(false);
   };
+
 
 
   const columns = [
@@ -85,7 +90,7 @@ function Student() {
     return () => {
       debouncedFetchStudents.cancel();
     };
-  }, [search]);
+  }, [search, currentPage]);
 
 
 
@@ -125,7 +130,7 @@ function Student() {
 
       <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
         if (editingStudent) {
-          handleUtil.handleOk(form, 'student', editingStudent, setStudents, students, setIsModalVisible)
+          handleUtil.handlePut(form, 'student', editingStudent, setStudents, students, setIsModalVisible)
         }
       }}
         onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
