@@ -7,7 +7,12 @@ import { toast } from 'react-toastify';
 
 
 function CreateLoan() {
-    const [searchResults, setSearchResults] = useState([]);
+    // const [searchResults, setSearchResults] = useState([]);
+
+    const [bookSearchResults, setBookSearchResults] = useState<Book[]>([]);
+    const [studentSearchResults, setStudentSearchResults] = useState<Student[]>([]);
+
+
     const { Option } = Select;
     const navigate = useNavigate();
 
@@ -41,10 +46,15 @@ function CreateLoan() {
     };
 
     const handleSearch = async (value: string, context: string) => {
+
         try {
             const response = await api.get(`/${context}?search=${value}&page=0&size=1000`);
-            setSearchResults(response.data.data.content);
-            console.log(response.data.data.content)
+            if (context === "student") {
+                setStudentSearchResults(response.data.data.content);
+            } else if (context === "book") {
+                setBookSearchResults(response.data.data.content);
+            }
+            console.log(response.data.data.content);
         } catch (error) {
             console.log('Ocorreu um erro ao pesquisar!', error);
         }
@@ -75,7 +85,7 @@ function CreateLoan() {
                                 onChange={(value) => handleSearch(value, "student")}
                                 placeholder="Selecione um estudante"
                             >
-                                {searchResults.map((student: Student) => (
+                                {studentSearchResults.map((student: Student) => (
                                     <Option key={student.id} value={student.id}>{student.email}  | livros em posse: {student.borrowedBooksCount}</Option>
 
                                 ))}
@@ -98,7 +108,7 @@ function CreateLoan() {
                                 onChange={(value) => handleSearch(value, "book")}
                                 placeholder="Selecione um estudante"
                             >
-                                {searchResults.map((book: Book) => (
+                                {bookSearchResults.map((book: Book) => (
                                     <Option key={book.id} value={book.id}>{book.title}  | Quantidade em estoque: {book.stockQuantity}</Option>
                                 ))}
                             </AutoComplete>

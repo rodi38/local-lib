@@ -3,11 +3,15 @@ import { Form, Input, Button, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { toast } from 'react-toastify';
+import HandleUtil from '../util/handle';
 
 
 
 function CreateStudent() {
     const navigate = useNavigate();
+
+    const handleUtil: HandleUtil<Student> = new HandleUtil();
+
 
     const onFinish = async (values: any) => {
         try {
@@ -27,8 +31,7 @@ function CreateStudent() {
             if(error.response.data.errors) {
                 error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
             }
-            toast.error( error.response.data.message, {theme: "colored", autoClose: 3000,});
-            console.log(error)
+            toast.error( handleUtil.handleDuplicityExceptionDetail(error.response.data.rootCause.serverErrorMessage.detail), {theme: "colored", autoClose: 3000,});
 
         }
 

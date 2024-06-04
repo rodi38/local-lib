@@ -2,12 +2,15 @@ import { Form, Input, InputNumber, Button, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { toast } from 'react-toastify';
+import HandleUtil from '../util/handle';
 
 
 
 function CreateBook() {
 
     const navigate = useNavigate();
+
+    const handleUtil: HandleUtil<Book> = new HandleUtil();
     
 
     const onFinish = async (values: any) => {
@@ -25,7 +28,12 @@ function CreateBook() {
             );
             navigate("/book"); 
         } catch (error: any) {
-            error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+            if(error.response.data.errors) {
+                error.response.data.errors.forEach((e: string) => toast.error(e, {theme: "colored", autoClose: 3000,}));
+            }
+            toast.error( handleUtil.handleDuplicityExceptionDetail(error.response.data.rootCause.serverErrorMessage.detail), {theme: "colored", autoClose: 3000,});
+            console.log(error)
+
         }
 
     };

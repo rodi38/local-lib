@@ -4,7 +4,7 @@ import { Button, Form, Modal, Table } from "antd";
 import Input, { SearchProps } from "antd/es/input";
 import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
-
+import debounce from 'lodash/debounce';
 
 function Student() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -16,6 +16,7 @@ function Student() {
   const handleUtil: HandleUtil<Student> = new HandleUtil();
 
   const [search, setSearch] = useState("");
+
 
 
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -67,28 +68,35 @@ function Student() {
     }
   ];
 
+  const fetchStudents = async (search: string, page: number) => {
+    try {
+      const response = await api.get(`/student?page=${page - 1}&search=${search}`);
+      setStudents(response.data.data.content);
+      setTotalPages(response.data.data.totalPages);
+    } catch (error) {
+      console.log('Ocorreu um erro!', error);
+    }
+  };
 
-  const { Search } = Input;
-
-  const onSearch: SearchProps['onSearch'] = (value) => setSearch(value);
-
+  const debouncedFetchStudents = debounce(fetchStudents, 300);
 
   useEffect(() => {
-    api.get(`/student?page=${currentPage - 1}&search=${search}`)
-      .then(response => {
-        setStudents(response.data.data.content);
-        setTotalPages(response.data.data.totalPages);
-      }).catch(error => {
-        console.log('Ocorreu um erro!', error)
-      });
-  }, [search, currentPage]);
+    debouncedFetchStudents(search, currentPage);
+    return () => {
+      debouncedFetchStudents.cancel();
+    };
+  }, [search]);
 
 
 
 
   return (
     <div>
-      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
+      <Input 
+        placeholder="Buscar estudante" 
+        onChange={(e) => setSearch(e.target.value)} 
+        style={{ width: '100%', marginBottom: '20px' }} 
+      />
 
       <Table dataSource={students} virtual columns={columns} pagination={{
         current: currentPage,

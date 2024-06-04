@@ -40,6 +40,11 @@ class HandleUtil<T extends IHasId> {
         console.log(form.getFieldsValue());
         setIsModalVisible(false);
     };
+
+
+    handleDuplicityExceptionDetail = (detail: string): string =>{
+        return detail.replace(/[()]/g, '').replace('=', ' = ');
+    }
 }
 
 export default HandleUtil;

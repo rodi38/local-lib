@@ -18,5 +18,4 @@ if exist "node_modules" (
     start cmd /k "npm install && start http://localhost:5173 && npm run dev "
 )
 
-
 exit
