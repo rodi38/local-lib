@@ -3,6 +3,7 @@ import { useState } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import _, { debounce } from 'lodash';
 
 
 
@@ -61,6 +62,9 @@ function CreateLoan() {
 
     };
 
+    const debouncedSearch = _.debounce((value, context) => handleSearch(value, context), 300);
+
+
 
     return (
         <div style={{}}>
@@ -82,18 +86,14 @@ function CreateLoan() {
 
                             <AutoComplete
                                 style={{ width: '100%' }}
-                                onChange={(value) => handleSearch(value, "student")}
+                                onChange={(value) => debouncedSearch(value, "student")}
                                 placeholder="Selecione um estudante"
                             >
                                 {studentSearchResults.map((student: Student) => (
                                     <Option key={student.id} value={student.id}>{student.email}  | livros em posse: {student.borrowedBooksCount}</Option>
 
                                 ))}
-
-
                             </AutoComplete>
-
-
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -105,7 +105,7 @@ function CreateLoan() {
 
                             <AutoComplete
                                 style={{ width: '100%' }}
-                                onChange={(value) => handleSearch(value, "book")}
+                                onChange={(value) => debouncedSearch(value, "book")}
                                 placeholder="Selecione um estudante"
                             >
                                 {bookSearchResults.map((book: Book) => (

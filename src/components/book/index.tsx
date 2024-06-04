@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Input, { SearchProps } from 'antd/es/input';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import HandleUtil from '../util/handle';
+import { debounce } from 'lodash';
 
 function Book() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -87,24 +88,34 @@ function Book() {
     }
   ];
 
-  const { Search } = Input;
 
+  const fetchBooks = async (search: string, page: number) => {
+    try {
+      const response = await api.get(`/book?page=${page - 1}&search=${search}`);
+      setBooks(response.data.data.content);
+      setTotalPages(response.data.data.totalPages);
+    } catch (error) {
+      console.log('Ocorreu um erro!', error);
+    }
+  };
 
-  const onSearch: SearchProps['onSearch'] = (value) => setSearch(value);
+  const debouncedFetchBooks = debounce(fetchBooks, 300);
+
 
   useEffect(() => {
-    api.get(`/book?page=${currentPage - 1}&search=${search}`)
-      .then(response => {
-        setBooks(response.data.data.content);
-        setTotalPages(response.data.data.totalPages)
-      }).catch(error => {
-        console.log('Ocorreu um erro!', error)
-      });
-  }, [search, currentPage]);
+    debouncedFetchBooks(search, currentPage);
+    return () => {
+      debouncedFetchBooks.cancel();
+    };
+  }, [search]);
 
   return (
     <div>
-      <Search placeholder="input search text" onSearch={onSearch} style={{ width: '100%' }} />
+      <Input 
+        placeholder="Buscar estudante" 
+        onChange={(e) => setSearch(e.target.value)} 
+        style={{ width: '100%', marginBottom: '20px' }} 
+      />
       <Table dataSource={books} columns={columns} pagination={{
         current: currentPage,
         total: totalPages * 10,
