@@ -1,10 +1,11 @@
-import { Button, Form, Modal, Table } from 'antd';
-import api from '../../api';
-import { useEffect, useState } from 'react';
-import Input, { SearchProps } from 'antd/es/input';
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
-import HandleUtil from '../util/handle';
-import { debounce } from 'lodash';
+import { Button, Form, Modal, Table } from "antd";
+import api from "../../api";
+import { useEffect, useState } from "react";
+import Input from "antd/es/input";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
+import HandleUtil from "../util/handle";
+import { debounce } from "lodash";
+import { toast } from "react-toastify";
 
 function Book() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -18,21 +19,19 @@ function Book() {
 
   const handleUtil: HandleUtil<Book> = new HandleUtil();
 
-
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [bookToDelete, setbookToDelete] = useState<Book | null>(null);
 
   const showDeleteConfirmModal = (book: Book) => {
     setbookToDelete(book);
     setIsDeleteModalVisible(true);
-
-    
   };
 
   const handleDeleteConfirm = async () => {
     if (bookToDelete) {
       await handleUtil.handleDelete(bookToDelete, "book", setBooks, books);
-      const pageAfterDeletion = (books.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+      const pageAfterDeletion =
+        books.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
       setCurrentPage(pageAfterDeletion);
       fetchBooks(search, pageAfterDeletion);
     }
@@ -43,69 +42,90 @@ function Book() {
     setIsDeleteModalVisible(false);
   };
 
-
   const columns = [
     {
-      title: 'Titulo',
-      dataIndex: 'title',
-      key: 'title',
+      title: "Titulo",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: 'Autor',
-      dataIndex: 'author',
-      key: 'author',
+      title: "Autor",
+      dataIndex: "author",
+      key: "author",
     },
     {
-      title: 'Categoria',
-      dataIndex: 'category',
-      key: 'category',
+      title: "Categoria",
+      dataIndex: "category",
+      key: "category",
     },
     {
-      title: 'ISBN',
-      dataIndex: 'isbn',
-      key: 'isbn',
+      title: "ISBN",
+      dataIndex: "isbn",
+      key: "isbn",
     },
     {
-      title: 'Editora',
-      dataIndex: 'publisher',
-      key: 'publisher',
+      title: "Editora",
+      dataIndex: "publisher",
+      key: "publisher",
     },
     {
-      title: 'Ano de publicação',
-      dataIndex: 'publishedYear',
-      key: 'publishedYear',
+      title: "Ano de publicação",
+      dataIndex: "publishedYear",
+      key: "publishedYear",
     },
     {
-      title: 'Quantidade em estoque',
-      dataIndex: 'stockQuantity',
-      key: 'stockQuantity',
+      title: "Quantidade em estoque",
+      dataIndex: "stockQuantity",
+      key: "stockQuantity",
     },
     {
-      title: 'Action',
-      dataIndex: '',
+      title: "Action",
+      dataIndex: "",
       width: 100,
-      key: 'z',
-      render: (_: any, book: Book) =>
-        <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
-          <a onClick={() => showDeleteConfirmModal(book)}><DeleteFilled style={{ color: '#e30202', fontSize: '18px' }} /></a>
-          <a onClick={() => handleUtil.handleEdit(book, setEditingBook, form, setIsModalVisible)}><EditFilled style={{ color: '#ff8903', fontSize: '18px' }} /></a>
-        </div>,
-    }
+      key: "z",
+      render: (_: any, book: Book) => (
+        <div style={{ display: "flex", justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => showDeleteConfirmModal(book)}>
+            <DeleteFilled style={{ color: "#e30202", fontSize: "18px" }} />
+          </a>
+          <a
+            onClick={() =>
+              handleUtil.handleEdit(
+                book,
+                setEditingBook,
+                form,
+                setIsModalVisible
+              )
+            }
+          >
+            <EditFilled style={{ color: "#ff8903", fontSize: "18px" }} />
+          </a>
+        </div>
+      ),
+    },
   ];
-
 
   const fetchBooks = async (search: string, page: number) => {
     try {
       const response = await api.get(`/book?page=${page - 1}&search=${search}`);
       setBooks(response.data.data.content);
       setTotalPages(response.data.data.totalPages);
-    } catch (error) {
-      console.log('Ocorreu um erro!', error);
+    } catch (error: any) {
+      if (error.response.data.errors) {
+        error.response.data.errors.forEach((e: string) =>
+          toast.error(e, { theme: "colored", autoClose: 3000 })
+        );
+      }
+      toast.error(
+        handleUtil.handleDuplicityExceptionDetail(
+          error.response.data.rootCause.serverErrorMessage.detail
+        ),
+        { theme: "colored", autoClose: 3000 }
+      );
     }
   };
 
   const debouncedFetchBooks = debounce(fetchBooks, 300);
-
 
   useEffect(() => {
     debouncedFetchBooks(search, currentPage);
@@ -116,17 +136,21 @@ function Book() {
 
   return (
     <div>
-      <Input 
-        placeholder="Buscar estudante" 
-        onChange={(e) => setSearch(e.target.value)} 
-        style={{ width: '100%', marginBottom: '20px' }} 
+      <Input
+        placeholder="Buscar estudante"
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ width: "100%", marginBottom: "20px" }}
       />
-      <Table dataSource={books} columns={columns} pagination={{
-        current: currentPage,
-        total: totalPages * 10,
-        onChange: (page) => setCurrentPage(page),
-        position: ['topCenter']
-      }} />
+      <Table
+        dataSource={books}
+        columns={columns}
+        pagination={{
+          current: currentPage,
+          total: totalPages * 10,
+          onChange: (page) => setCurrentPage(page),
+          position: ["topCenter"],
+        }}
+      />
 
       {isDeleteModalVisible && (
         <Modal
@@ -146,11 +170,21 @@ function Book() {
           <p>Tem certeza que deseja deletar este item?</p>
         </Modal>
       )}
-      <Modal title="Editar Livro" open={isModalVisible} onOk={() => {
-        if (editingBook) {
-          handleUtil.handlePut(form, "book", editingBook, setBooks, books, setIsModalVisible,)
-        }
-      }}
+      <Modal
+        title="Editar Livro"
+        open={isModalVisible}
+        onOk={() => {
+          if (editingBook) {
+            handleUtil.handlePut(
+              form,
+              "book",
+              editingBook,
+              setBooks,
+              books,
+              setIsModalVisible
+            );
+          }
+        }}
         onCancel={() => handleUtil.handleCancel(setIsModalVisible)}
       >
         <Form form={form} layout="vertical">
@@ -178,8 +212,7 @@ function Book() {
         </Form>
       </Modal>
     </div>
-
-  )
+  );
 }
 
-export default Book
+export default Book;

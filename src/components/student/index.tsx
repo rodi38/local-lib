@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import api from "../../api";
 import { Button, Form, Modal, Table } from "antd";
-import Input, { SearchProps } from "antd/es/input";
+import Input from "antd/es/input";
 import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import HandleUtil from "../util/handle";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
+import { toast } from "react-toastify";
 
 function Student() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -17,8 +18,6 @@ function Student() {
 
   const [search, setSearch] = useState("");
 
-
-
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
@@ -29,57 +28,88 @@ function Student() {
 
   const handleDeleteConfirm = async () => {
     if (studentToDelete) {
-      await handleUtil.handleDelete(studentToDelete, "student", setStudents, students);
-      const pageAfterDeletion = (students.length === 1 && currentPage > 1) ? currentPage - 1 : currentPage;
+      await handleUtil.handleDelete(
+        studentToDelete,
+        "student",
+        setStudents,
+        students
+      );
+      const pageAfterDeletion =
+        students.length === 1 && currentPage > 1
+          ? currentPage - 1
+          : currentPage;
       setCurrentPage(pageAfterDeletion);
       fetchStudents(search, pageAfterDeletion);
     }
     setIsDeleteModalVisible(false);
   };
 
-  
   const handleDeleteCancel = () => {
     setIsDeleteModalVisible(false);
   };
 
-
-
   const columns = [
     {
-      title: 'Nome Completo',
-      dataIndex: 'fullName',
-      key: 'name',
+      title: "Nome Completo",
+      dataIndex: "fullName",
+      key: "name",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Livros em Posse',
-      dataIndex: 'borrowedBooksCount',
-      key: 'borrowedBooksCount',
+      title: "Livros em Posse",
+      dataIndex: "borrowedBooksCount",
+      key: "borrowedBooksCount",
     },
     {
-      title: 'Action',
-      dataIndex: '',
+      title: "Action",
+      dataIndex: "",
       width: 100,
-      key: 'z',
-      render: (_: any, student: Student) =>
-        <div style={{ display: 'flex', justifyContent: "flex-start", gap: 20 }}>
-          <a onClick={() => student.borrowedBooksCount === 0 ? showDeleteConfirmModal(student) : alert("Estudante ainda tem livros a serem devolvidos, não é possivel apagar o registro.")}><DeleteFilled style={{ color: '#e30202', fontSize: '18px' }} /></a>
-          <a onClick={() => handleUtil.handleEdit(student, setEditingStudent, form, setIsModalVisible)}><EditFilled style={{ color: '#ff8903', fontSize: '18px' }} /></a>
-        </div>,
-    }
+      key: "z",
+      render: (_: any, student: Student) => (
+        <div style={{ display: "flex", justifyContent: "flex-start", gap: 20 }}>
+          <a onClick={() => showDeleteConfirmModal(student)}>
+            <DeleteFilled style={{ color: "#e30202", fontSize: "18px" }} />
+          </a>
+          <a
+            onClick={() =>
+              handleUtil.handleEdit(
+                student,
+                setEditingStudent,
+                form,
+                setIsModalVisible
+              )
+            }
+          >
+            <EditFilled style={{ color: "#ff8903", fontSize: "18px" }} />
+          </a>
+        </div>
+      ),
+    },
   ];
 
   const fetchStudents = async (search: string, page: number) => {
     try {
-      const response = await api.get(`/student?page=${page - 1}&search=${search}`);
+      const response = await api.get(
+        `/student?page=${page - 1}&search=${search}`
+      );
       setStudents(response.data.data.content);
       setTotalPages(response.data.data.totalPages);
-    } catch (error) {
-      console.log('Ocorreu um erro!', error);
+    } catch (error: any) {
+      if (error.response.data.errors) {
+        error.response.data.errors.forEach((e: string) =>
+          toast.error(e, { theme: "colored", autoClose: 3000 })
+        );
+      }
+      toast.error(
+        handleUtil.handleDuplicityExceptionDetail(
+          error.response.data.rootCause.serverErrorMessage.detail
+        ),
+        { theme: "colored", autoClose: 3000 }
+      );
     }
   };
 
@@ -92,23 +122,25 @@ function Student() {
     };
   }, [search, currentPage]);
 
-
-
-
   return (
     <div>
-      <Input 
-        placeholder="Buscar estudante" 
-        onChange={(e) => setSearch(e.target.value)} 
-        style={{ width: '100%', marginBottom: '20px' }} 
+      <Input
+        placeholder="Buscar estudante"
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ width: "100%", marginBottom: "20px" }}
       />
 
-      <Table dataSource={students} virtual columns={columns} pagination={{
-        current: currentPage,
-        total: totalPages * 10,
-        onChange: (page) => setCurrentPage(page),
-        position: ['topCenter'],
-      }} />
+      <Table
+        dataSource={students}
+        virtual
+        columns={columns}
+        pagination={{
+          current: currentPage,
+          total: totalPages * 10,
+          onChange: (page) => setCurrentPage(page),
+          position: ["topCenter"],
+        }}
+      />
       {isDeleteModalVisible && (
         <Modal
           title="Confirmação de Deleção"
@@ -128,12 +160,23 @@ function Student() {
         </Modal>
       )}
 
-      <Modal title="Editar dados do estudante" open={isModalVisible} onOk={() => {
-        if (editingStudent) {
-          handleUtil.handlePut(form, 'student', editingStudent, setStudents, students, setIsModalVisible)
-        }
-      }}
-        onCancel={() => handleUtil.handleCancel(setIsModalVisible)}>
+      <Modal
+        title="Editar dados do estudante"
+        open={isModalVisible}
+        onOk={() => {
+          if (editingStudent) {
+            handleUtil.handlePut(
+              form,
+              "student",
+              editingStudent,
+              setStudents,
+              students,
+              setIsModalVisible
+            );
+          }
+        }}
+        onCancel={() => handleUtil.handleCancel(setIsModalVisible)}
+      >
         <Form form={form} layout="vertical">
           <Form.Item label="Nome completo" name="fullName">
             <Input />
@@ -147,4 +190,4 @@ function Student() {
   );
 }
 
-export default Student
+export default Student;
