@@ -31,9 +31,10 @@ function CreateLoan() {
           theme: localStorage.getItem('theme') === "light" ? "colored" : "dark" ,
         }
       );
-
       navigate("/loan");
     } catch (error: any) {
+      toast.error(error);
+      
       toast.error(error.response.data.message, {
         theme: localStorage.getItem('theme') === "light" ? "colored" : "dark",
         autoClose: 3000,
@@ -41,6 +42,7 @@ function CreateLoan() {
       error.response.data.errors.forEach((e: string) =>
         toast.error(e, { theme: localStorage.getItem('theme') === "light" ? "colored" : "dark", autoClose: 3000 })
       );
+
     }
   };
 

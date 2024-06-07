@@ -50,15 +50,15 @@ function App() {
     },
     {
       key: "2",
-      label: "Empréstimo",
-      link: "/loan",
-      newLink: "/create-loan",
-    },
-    {
-      key: "3",
       label: "Estudante",
       link: "/student",
       newLink: "/create-student",
+    },
+    {
+      key: "3",
+      label: "Empréstimo",
+      link: "/loan",
+      newLink: "/create-loan",
     },
   ];
 
@@ -93,7 +93,7 @@ function App() {
     >
       <ToastContainer />
       <Layout style={{ height: "100vh", width: "100%" }}>
-        <header style={{ display: "flex", alignItems: "center" }}>
+        <header style={{ display: "flex",alignItems: "center" }}>
           <Menu
             mode="horizontal"
             defaultSelectedKeys={["2"]}
@@ -160,7 +160,7 @@ function App() {
             textAlign: "center",
           }}
         >
-          Rodi38 © 2024
+          Estácio © 2024
         </Footer>
       </Layout>
     </ConfigProvider>

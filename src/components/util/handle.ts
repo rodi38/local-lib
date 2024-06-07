@@ -79,16 +79,16 @@ class HandleUtil<T extends IHasId> {
 
         setIsModalVisible(false);
       })
-      .catch((error) => {
+      .catch((error: any) => {
+        console.log(error);
         if (error.response.data.errors) {
           error.response.data.errors.forEach((e: string) =>
             toast.error(e, { theme: localStorage.getItem('theme') === "light" ? "colored" : "dark", autoClose: 3000 })
           );
         }
         toast.error(
-          this.handleDuplicityExceptionDetail(
-            error.response.data.rootCause.serverErrorMessage.detail
-          ),
+            error.response.data.message
+          ,
           { theme: localStorage.getItem('theme') === "light" ? "colored" : "dark", autoClose: 3000 }
         );
       });

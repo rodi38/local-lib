@@ -85,11 +85,6 @@ function Loan() {
           <a onClick={() => showDeleteConfirmModal(loan)}>
             <DeleteFilled style={{ color: "#e30202", fontSize: "18px" }} />
           </a>
-          {loan.returnDate ? (
-            <a onClick={() => alert("Este livro já foi retornado")}>
-              <UndoOutlined style={{ color: "#e30202", fontSize: "18px" }} />
-            </a>
-          ) : (
             <a
               onClick={() =>
                 handleUtil.handleEdit(
@@ -102,7 +97,6 @@ function Loan() {
             >
               <UndoOutlined style={{ color: "#0251e3", fontSize: "18px" }} />
             </a>
-          )}
         </div>
       ),
     },
